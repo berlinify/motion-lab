@@ -1,0 +1,66 @@
+import { Composition, Folder } from "remotion";
+import { GsapTitle } from "./GsapTitle";
+import { ThreeScene } from "./ThreeScene";
+import { ClaudeCodePromo } from "./promo/ClaudeCodePromo";
+import { PayStarPromo } from "./paystar/PayStarPromo";
+import { IconLoop } from "./paystar/IconLoop";
+
+export const Root: React.FC = () => (
+  <>
+    <Folder name="PayStar">
+      <Composition id="PayStarPromo" component={PayStarPromo} durationInFrames={300} fps={30} width={1920} height={1080} />
+      <Composition
+        id="PayStarIconGateway"
+        component={IconLoop}
+        durationInFrames={90}
+        fps={30}
+        width={512}
+        height={512}
+        defaultProps={{ icon: "gateway" as const, background: true }}
+      />
+      <Composition
+        id="PayStarIconRouting"
+        component={IconLoop}
+        durationInFrames={99}
+        fps={30}
+        width={512}
+        height={512}
+        defaultProps={{ icon: "routing" as const, background: true }}
+      />
+      <Composition
+        id="PayStarIconSettlement"
+        component={IconLoop}
+        durationInFrames={90}
+        fps={30}
+        width={512}
+        height={512}
+        defaultProps={{ icon: "settlement" as const, background: true }}
+      />
+    </Folder>
+    <Composition
+      id="ClaudeCodePromo"
+      component={ClaudeCodePromo}
+      durationInFrames={300}
+      fps={30}
+      width={1920}
+      height={1080}
+    />
+    <Composition
+      id="GsapTitle"
+      component={GsapTitle}
+      durationInFrames={120}
+      fps={30}
+      width={1920}
+      height={1080}
+      defaultProps={{ title: "Hello, video" }}
+    />
+    <Composition
+      id="ThreeScene"
+      component={ThreeScene}
+      durationInFrames={150}
+      fps={30}
+      width={1920}
+      height={1080}
+    />
+  </>
+);
