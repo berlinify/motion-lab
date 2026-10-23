@@ -17,10 +17,10 @@ It writes to `<video dir>/<name>.analysis/` (or `--out DIR`):
 |---|---|
 | `summary.md` | **Read first.** Probe, proxy advice, a shot table, speech segments, audio peaks and silences |
 | `timeline.png` | Loudness and motion over time, with cuts (white lines), audio peaks (red), silences (grey) and speech (yellow). It shows the shape of the video at a glance |
-| `sheets/contact-NN.png` | Every shot as a labelled tile (`#shot start duration`). Shots over 15 s get an extra tile every 10 s (`#shot @ time`). **These are your eyes on the footage** |
+| `sheets/contact-NN.png` | Every shot as a labelled tile (`#shot start duration`). Tiles follow the display orientation (portrait 180×320 for phone-vertical video). Shots over 15 s get an extra tile every 10 s (`#shot @ time`). **These are your eyes on the footage** |
 | `analysis.json` | Everything in machine form. `shots[]`, `segments[]`, `audioPeaks[]` and `silences[]` feed the highlights edit |
 | `thumbs/` | The individual tiles |
-| `<name>.proxy.mp4` | Only with `--proxy`: H.264, constant 30 fps, ≤1080p, 1 s keyframe interval. Fast and frame-accurate in Remotion |
+| `<name>.proxy.mp4` | Only with `--proxy`: H.264, constant 30 fps, long side ≤1920 (1080×1920 for phone-vertical), 1 s keyframe interval. Fast and frame-accurate in Remotion |
 
 Speed: the 10.5 min test file (480p VP9, 60 fps) took about 58 s on 8 cores, roughly 11× faster than real time. `--transcribe` adds the transcription time (about 2.7× real time for Persian on CPU, see `video-transcribe`).
 

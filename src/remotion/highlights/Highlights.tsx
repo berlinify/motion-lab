@@ -55,12 +55,14 @@ export type HighlightsProps = {
 
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 
-// Place a source of srcW×srcH into the frame: "cover" crops around the focus point,
-// "blur" letterboxes it over a blurred, darkened cover copy (nothing gets cropped).
+// Place a source of srcW×srcH into the frame: "cover" crops so the focus point (the
+// subject's position in the source, 0–1) sits as close to the centre as the edges
+// allow; "blur" letterboxes it over a blurred, darkened cover copy (nothing cropped).
 const placement = (W: number, H: number, sw: number, sh: number, mode: "cover" | "contain", fx: number, fy: number): React.CSSProperties => {
   const s = mode === "cover" ? Math.max(W / sw, H / sh) : Math.min(W / sw, H / sh);
   const w = sw * s, h = sh * s;
-  return { position: "absolute", width: w, height: h, left: (W - w) * fx, top: (H - h) * fy };
+  const axis = (frame: number, size: number, f: number) => (size <= frame ? (frame - size) / 2 : Math.min(0, Math.max(frame - size, frame / 2 - f * size)));
+  return { position: "absolute", width: w, height: h, left: axis(W, w, fx), top: axis(H, h, fy) };
 };
 
 const KEN_BURNS = {
@@ -145,6 +147,25 @@ const presentation = (type: string): AnyPresentation | null => {
   return (p as unknown as AnyPresentation) ?? null;
 };
 
+// Just the clip timeline of an EDL, for compositions that add their own intro, outro
+// or overlays around it (e.g. a branded reel). Lasts edl.durationInFrames.
+export const EdlClips: React.FC<{ readonly edl: Edl }> = ({ edl }) => (
+  <TransitionSeries>
+    {edl.clips.flatMap((clip, i) => {
+      const out = [
+        <TransitionSeries.Sequence key={`c${i}`} name={`${i + 1} ${clip.src.split("/").pop()}`} durationInFrames={clip.durationInFrames}>
+          <Clip clip={clip} edl={edl} />
+        </TransitionSeries.Sequence>,
+      ];
+      const t = clip.transitionAfter;
+      const pres = t ? presentation(t.type) : null;
+      if (t && pres && t.frames > 0)
+        out.push(<TransitionSeries.Transition key={`t${i}`} presentation={pres} timing={linearTiming({ durationInFrames: t.frames })} />);
+      return out;
+    })}
+  </TransitionSeries>
+);
+
 // A social cut rendered from an EDL: clips (video or photo, reframed to the canvas)
 // joined by optional transitions, plus narration with burned-in captions and music.
 export const Highlights: React.FC<HighlightsProps> = ({ edl }) => {
@@ -156,20 +177,7 @@ export const Highlights: React.FC<HighlightsProps> = ({ edl }) => {
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
-      <TransitionSeries>
-        {edl.clips.flatMap((clip, i) => {
-          const out = [
-            <TransitionSeries.Sequence key={`c${i}`} name={`${i + 1} ${clip.src.split("/").pop()}`} durationInFrames={clip.durationInFrames}>
-              <Clip clip={clip} edl={edl} />
-            </TransitionSeries.Sequence>,
-          ];
-          const t = clip.transitionAfter;
-          const pres = t ? presentation(t.type) : null;
-          if (t && pres && t.frames > 0)
-            out.push(<TransitionSeries.Transition key={`t${i}`} presentation={pres} timing={linearTiming({ durationInFrames: t.frames })} />);
-          return out;
-        })}
-      </TransitionSeries>
+      <EdlClips edl={edl} />
       {n ? (
         <Sequence name="Narration" from={n.startFrame} durationInFrames={n.durationInFrames}>
           <Audio src={staticFile(n.src)} trimBefore={n.trimBefore} volume={n.volume} />
