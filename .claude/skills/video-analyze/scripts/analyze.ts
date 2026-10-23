@@ -42,7 +42,7 @@ function usage(): never {
   --lang fa|en|auto      transcription language (default fa)
   --prompt "…"           transcription prompt (names/brands)
   --captions FILE        use an existing <name>.captions.json instead of transcribing
-  --proxy                write an edit-friendly proxy (H.264, CFR 30 fps, ≤1080p, 1 s GOP)
+  --proxy                write an edit-friendly proxy (H.264, CFR 30 fps, long side ≤1920, 1 s GOP)
   --grid CxR             contact-sheet grid (default 5x6)`);
   process.exit(1);
 }
@@ -261,7 +261,9 @@ function speechSegments(words: Caption[], loud: { t: number; lufs: number }[], s
 
 // One tile per shot (mid-shot frame); shots over 15 s get another tile every 10 s so
 // long takes (interviews, credits, b-roll pans) show what actually happens in them.
-async function thumbnails(input: string, shots: Shot[], dir: string, tmp: string) {
+async function thumbnails(input: string, shots: Shot[], dir: string, tmp: string, portrait: boolean) {
+  // Tiles follow the source's display orientation, so phone-vertical footage isn't a sliver.
+  const [tw, th] = portrait ? [180, 320] : [320, 180];
   const font = spawnSync("fc-match", ["-f", "%{file}", "sans:bold"]).stdout?.toString() || "";
   fs.rmSync(path.join(dir, "thumbs"), { recursive: true, force: true });
   fs.mkdirSync(path.join(dir, "thumbs"), { recursive: true });
@@ -280,16 +282,16 @@ async function thumbnails(input: string, shots: Shot[], dir: string, tmp: string
       ? `,drawtext=fontfile=${font}:textfile=${label}:x=8:y=8:fontsize=18:fontcolor=white:box=1:boxcolor=black@0.65:boxborderw=6`
       : "";
     const name = path.join("thumbs", `tile-${String(i + 1).padStart(3, "0")}.jpg`);
-    await ffmpeg(["-ss", tile.t.toFixed(2), "-i", input, "-frames:v", "1", "-vf", `scale=320:180:force_original_aspect_ratio=decrease,pad=320:180:(ow-iw)/2:(oh-ih)/2${draw}`, "-q:v", "3", "-y", path.join(dir, name)]);
+    await ffmpeg(["-ss", tile.t.toFixed(2), "-i", input, "-frames:v", "1", "-vf", `scale=${tw}:${th}:force_original_aspect_ratio=decrease,pad=${tw}:${th}:(ow-iw)/2:(oh-ih)/2${draw}`, "-q:v", "3", "-y", path.join(dir, name)]);
     tile.shot.thumbs.push(name);
   });
   for (const s of shots) s.thumbs.sort();
 }
 
-async function contactSheets(dir: string, o: Opts) {
+async function contactSheets(dir: string, o: Opts, portrait: boolean) {
   fs.rmSync(path.join(dir, "sheets"), { recursive: true, force: true });
   fs.mkdirSync(path.join(dir, "sheets"), { recursive: true });
-  await ffmpeg(["-framerate", "1", "-i", path.join(dir, "thumbs", "tile-%03d.jpg"), "-vf", `tile=${o.cols}x${o.rows}:padding=4:color=0x202020`, "-y", path.join(dir, "sheets", "contact-%02d.png")]);
+  await ffmpeg(["-framerate", "1", "-i", path.join(dir, "thumbs", "tile-%03d.jpg"), "-vf", `tile=${portrait ? "8x3" : `${o.cols}x${o.rows}`}:padding=4:color=0x202020`, "-y", path.join(dir, "sheets", "contact-%02d.png")]);
   return fs.readdirSync(path.join(dir, "sheets")).sort().map((f) => path.join("sheets", f));
 }
 
@@ -372,14 +374,17 @@ async function main() {
 
     const peaks = audioPeaks(audio.loud, shots);
     const segments = speechSegments(words, audio.loud, shots);
-    await thumbnails(input, shots, dir, tmp);
-    const sheets = await contactSheets(dir, o);
+    // Display orientation: ffmpeg auto-rotates, so a ±90° rotation swaps the stored size.
+    const sideways = info.video.rotation % 180 === 90;
+    const portrait = sideways ? info.video.width > info.video.height : info.video.height > info.video.width;
+    await thumbnails(input, shots, dir, tmp, portrait);
+    const sheets = await contactSheets(dir, o, portrait);
     await timeline(dir, info.duration, frames, audio.loud, shots, audio.silences, words, peaks);
 
     let proxy: string | null = null;
     if (o.proxy) {
       proxy = path.join(dir, `${base}.proxy.mp4`);
-      await ffmpeg(["-i", input, "-vf", "scale='min(1920,iw)':-2,fps=30", "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-g", "30", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", "-y", proxy]);
+      await ffmpeg(["-i", input, "-vf", "scale='if(gte(iw,ih),min(1920,iw),-2)':'if(gte(iw,ih),-2,min(1920,ih))',fps=30", "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-g", "30", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", "-y", proxy]);
     }
 
     const silences = audio.silences.map((s) => ({ start: r2(s.start), end: r2(s.end), duration: r2(s.end - s.start) }));

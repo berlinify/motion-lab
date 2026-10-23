@@ -53,10 +53,11 @@ Times are in seconds, and paths are relative to `public/`:
 
 | Field | Meaning |
 |---|---|
-| `fit` | `cover` crops to fill the frame around `focusX` / `focusY` (0–1). `blur` shows the whole frame over a blurred copy of itself. The default is `cover` when a focus point is given or the source is roughly the canvas shape, otherwise `blur` |
+| `fit` | `cover` crops to fill the frame, centring `focusX` / `focusY`: **the subject's position in the source** (0 = left/top, 1 = right/bottom), clamped at the edges. `blur` shows the whole frame over a blurred copy of itself. The default is `cover` when a focus point is given or the source is roughly the canvas shape, otherwise `blur` |
 | `kenBurns` | Photo motion: `in`, `out`, `left`, `right` or `none`. Defaults rotate through them |
 | `priority` | 1 = must keep, 3 = first to drop if the cut can't fit |
 | `volume` | Source audio level (default 1). It's ducked to `narration.duckTo` while the narration plays |
+| `sourceAudio` (plan level) | `false` mutes every clip, for music-only cuts |
 | `title` | Large text over the clip. Use it for the hook and the end card. RTL-aware |
 
 **Social editing defaults:**
@@ -87,6 +88,12 @@ npm run render -- Highlights out/<name>.mp4 --props='{"edlSrc":"<project>/edl.js
 ```
 
 Then verify the result: `ffprobe` should show `nb_frames` = target × fps.
+
+## Branded wrappers (intro / outro / overlays)
+
+`Highlights.tsx` exports `EdlClips`, which is just the clip timeline. A custom composition can put it in a `TransitionSeries.Sequence` between its own intro and outro scenes, and add overlays (a mascot, a logo bug) and music on top. Fit the plan's `targetSeconds` to the **body** length: total minus intro and outro, plus the transition overlaps. Give such a composition a `guides` prop that tints the Instagram Reels UI zones, and render check stills with it on.
+
+**Instagram Reels safe area** (1080×1920): keep text and overlays out of the top ~250 px, the bottom ~420 px and the right ~150 px between y≈900 and y≈1500. A landscape source cropped to 9:16 has no vertical room, so a sign or text at the top of the frame lands under the UI. Use `blur` fit for those shots.
 
 ## What the demo taught
 

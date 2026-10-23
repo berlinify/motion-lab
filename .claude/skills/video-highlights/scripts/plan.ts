@@ -24,6 +24,8 @@ type Plan = {
   format?: "9:16" | "4:5" | "1:1" | "16:9";
   fps?: number;
   targetSeconds: number;
+  /** false = mute every clip's own audio (music-only cuts). */
+  sourceAudio?: boolean;
   transition?: Transition;
   clips: PlanClip[];
   narration?: { src: string; in: number; out: number; at?: number; volume?: number; captions?: string; duckTo?: number };
@@ -198,7 +200,7 @@ const edl = {
     fit: it.plan.fit ?? (it.plan.focusX !== undefined || it.plan.focusY !== undefined || it.width / it.height <= (width / height) * 1.4 ? "cover" : "blur"),
     focusX: it.plan.focusX ?? 0.5, focusY: it.plan.focusY ?? 0.5,
     // Source audio plays at this level and is ducked under narration by the composition.
-    volume: it.type === "video" ? ((it.plan as { volume?: number }).volume ?? 1) : 0,
+    volume: it.type === "video" && plan.sourceAudio !== false ? ((it.plan as { volume?: number }).volume ?? 1) : 0,
     kenBurns: it.type === "photo" ? ((it.plan as { kenBurns?: string }).kenBurns ?? ["in", "left", "out", "right"][i % 4]) : null,
     title: it.plan.title ?? null,
     transitionAfter: i < items.length - 1 ? trs[i] : null,
