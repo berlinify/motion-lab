@@ -12,13 +12,14 @@ This is a programmatic video generation repo. It uses three separate rendering p
 | **Motion Canvas** (generator scenes → frames/MP4) | `src/motion-canvas/project.ts`, served by `vite.config.ts` | Explainer-style, code-driven 2D animation built with its own editor. |
 | **Satori + resvg** (JSX → SVG → PNG) | `scripts/thumbnail.tsx` | Static images: thumbnails, title cards, and overlays to bring into either pipeline. |
 
-FFmpeg: Remotion bundles its own (`npx remotion ffmpeg …` / `npx remotion ffprobe …`). Motion Canvas uses `@motion-canvas/ffmpeg` with `@ffmpeg-installer` binaries. No system ffmpeg is installed. Remotion's ffmpeg is a minimal build without `-vf`/`-filter_complex` filters, so it can only transcode, concatenate, and mux. To inspect a frame, render it with `npm run still` instead of extracting it with ffmpeg.
+FFmpeg: a full system ffmpeg (v9, with filters such as `scdet`, `silencedetect`, `ebur128`) is installed at `/usr/bin/ffmpeg`, and the analysis and transcription scripts use it. Remotion also bundles its own (`npx remotion ffmpeg …` / `npx remotion ffprobe …`), a minimal build without `-vf`/`-filter_complex` that can only transcode, concatenate, and mux. Motion Canvas uses `@motion-canvas/ffmpeg` with `@ffmpeg-installer` binaries. To inspect a frame of a composition, render it with `npm run still`.
 
 ## Video projects
 
 Each video lives in its own folder under `src/remotion/` (`promo/` = Claude Code, `paystar/` = PayStar), and each is registered in `Root.tsx`. Helpers shared across videos, such as `RevealText` (per-glyph spring/blur reveal) and the `blurZoom` transition, live in `src/remotion/shared/`. Every promo follows the same shape: a continuous `Backdrop` sits *outside* a `TransitionSeries` of scenes. Scene lengths minus the transition overlaps must add up to the composition's `durationInFrames`.
 
 - **Brand logos as vectors:** `paystar/logoPaths.ts` was traced from `public/paystar/logo.png` using the `potrace` dev dependency. Each colour layer was blurred and upscaled before tracing, to remove pixel stair-steps. Tracing each colour separately lets the wordmark and the accent animate independently. The `raster-to-svg` skill (`.claude/skills/raster-to-svg/`) now automates this: it handles quantize → trace → score, and `--ts` emits a paths module.
+- **Captions:** the `video-transcribe` skill (`.claude/skills/video-transcribe/`) turns a video into word-timed `Caption[]` JSON plus SRT/VTT/TXT/MD with local whisper.cpp. `shared/Captions.tsx` renders them with word highlighting and right-to-left (RTL) handling, and `captioned/CaptionedVideo.tsx` burns them into any video in `public/`.
 - **Animated icon loops** (`paystar/icons.tsx` with `IconLoop.tsx`): the icon draws on from `start` and undraws from `end`, so a standalone render loops seamlessly. For a transparent render, add: `--codec=vp9 --image-format=png --pixel-format=yuva420p --props='{"icon":"routing","background":false}'`.
 
 ## Commands
