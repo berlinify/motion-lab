@@ -4,6 +4,7 @@ import { ThreeScene } from "./ThreeScene";
 import { ClaudeCodePromo } from "./promo/ClaudeCodePromo";
 import { PayStarPromo } from "./paystar/PayStarPromo";
 import { IconLoop } from "./paystar/IconLoop";
+import { CaptionedVideo, calculateCaptionedVideoMetadata } from "./captioned/CaptionedVideo";
 
 export const Root: React.FC = () => (
   <>
@@ -37,6 +38,18 @@ export const Root: React.FC = () => (
         defaultProps={{ icon: "settlement" as const, background: true }}
       />
     </Folder>
+    {/* Burned-in captions from the video-transcribe skill. public/demo/ is gitignored
+        (third-party sample); point the props at your own video + captions JSON. */}
+    <Composition
+      id="CaptionedVideo"
+      component={CaptionedVideo}
+      durationInFrames={300}
+      fps={30}
+      width={1920}
+      height={1080}
+      defaultProps={{ videoSrc: "demo/nowruz-fa.mp4", captionsSrc: "demo/nowruz-fa.captions.json" }}
+      calculateMetadata={calculateCaptionedVideoMetadata}
+    />
     <Composition
       id="ClaudeCodePromo"
       component={ClaudeCodePromo}
