@@ -18,7 +18,7 @@ FFmpeg: Remotion bundles its own (`npx remotion ffmpeg …` / `npx remotion ffpr
 
 Each video lives in its own folder under `src/remotion/` (`promo/` = Claude Code, `paystar/` = PayStar), and each is registered in `Root.tsx`. Helpers shared across videos, such as `RevealText` (per-glyph spring/blur reveal) and the `blurZoom` transition, live in `src/remotion/shared/`. Every promo follows the same shape: a continuous `Backdrop` sits *outside* a `TransitionSeries` of scenes. Scene lengths minus the transition overlaps must add up to the composition's `durationInFrames`.
 
-- **Brand logos as vectors:** `paystar/logoPaths.ts` was traced from `public/paystar/logo.png` using the `potrace` dev dependency. Each colour layer was blurred and upscaled before tracing, to remove pixel stair-steps. Tracing each colour separately lets the wordmark and the accent animate independently.
+- **Brand logos as vectors:** `paystar/logoPaths.ts` was traced from `public/paystar/logo.png` using the `potrace` dev dependency. Each colour layer was blurred and upscaled before tracing, to remove pixel stair-steps. Tracing each colour separately lets the wordmark and the accent animate independently. The `raster-to-svg` skill (`.claude/skills/raster-to-svg/`) now automates this: it handles quantize → trace → score, and `--ts` emits a paths module.
 - **Animated icon loops** (`paystar/icons.tsx` with `IconLoop.tsx`): the icon draws on from `start` and undraws from `end`, so a standalone render loops seamlessly. For a transparent render, add: `--codec=vp9 --image-format=png --pixel-format=yuva420p --props='{"icon":"routing","background":false}'`.
 
 ## Commands
