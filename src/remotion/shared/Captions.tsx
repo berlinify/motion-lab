@@ -19,6 +19,8 @@ type Props = {
   readonly fontSize?: number;
   readonly color?: string;
   readonly highlight?: string;
+  /** Translucent box behind each page, for busy or bright footage. */
+  readonly boxed?: boolean;
   readonly style?: React.CSSProperties;
 };
 
@@ -30,6 +32,7 @@ export const Captions: React.FC<Props> = ({
   fontSize = 56,
   color = "rgba(255,255,255,0.92)",
   highlight = "#FFCC00",
+  boxed = false,
   style,
 }) => {
   const frame = useCurrentFrame();
@@ -58,6 +61,7 @@ export const Captions: React.FC<Props> = ({
         lineHeight: 1.5,
         color,
         textShadow: "0 4px 24px rgba(0,0,0,0.45)",
+        ...(boxed ? { backgroundColor: "rgba(0,0,0,0.5)", borderRadius: fontSize * 0.4, padding: `${fontSize * 0.12}px ${fontSize * 0.45}px` } : {}),
         opacity: enter,
         translate: `0px ${(1 - enter) * 24}px`,
         ...style,
