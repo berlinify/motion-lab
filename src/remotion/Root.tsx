@@ -5,6 +5,7 @@ import { ClaudeCodePromo } from "./promo/ClaudeCodePromo";
 import { PayStarPromo } from "./paystar/PayStarPromo";
 import { IconLoop } from "./paystar/IconLoop";
 import { CaptionedVideo, calculateCaptionedVideoMetadata } from "./captioned/CaptionedVideo";
+import { Highlights, calculateHighlightsMetadata } from "./highlights/Highlights";
 
 export const Root: React.FC = () => (
   <>
@@ -49,6 +50,18 @@ export const Root: React.FC = () => (
       height={1080}
       defaultProps={{ videoSrc: "demo/nowruz-fa.mp4", captionsSrc: "demo/nowruz-fa.captions.json" }}
       calculateMetadata={calculateCaptionedVideoMetadata}
+    />
+    {/* Social cut rendered from an EDL by the video-highlights skill (plan.ts).
+        Size, fps and duration come from the EDL. */}
+    <Composition
+      id="Highlights"
+      component={Highlights}
+      durationInFrames={300}
+      fps={30}
+      width={1080}
+      height={1920}
+      defaultProps={{ edlSrc: "demo/nowruz/edl.json" }}
+      calculateMetadata={calculateHighlightsMetadata}
     />
     <Composition
       id="ClaudeCodePromo"
