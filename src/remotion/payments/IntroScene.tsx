@@ -1,6 +1,6 @@
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { RevealText } from "../shared/RevealText";
-import { ACCENT_CENTER, LOGO_ASPECT, PayStarLogo } from "./PayStarLogo";
+import { ACCENT_CENTER, LOGO_ASPECT, Logo } from "./Logo";
 import { Sparkle } from "./Sparkle";
 import { clamp, colors, easeOutExpo, fonts } from "./theme";
 
@@ -85,7 +85,7 @@ export const IntroScene: React.FC = () => {
         );
       })}
       <div style={{ position: "absolute", left: LOGO_CX - LOGO_W / 2, top: LOGO_CY - (LOGO_W * LOGO_ASPECT) / 2 }}>
-        <PayStarLogo
+        <Logo
           width={LOGO_W}
           reveal={interpolate(frame, [hit, hit + 0.75 * fps], [0, 1], { ...clamp, easing: easeOutExpo })}
           accent={accent}

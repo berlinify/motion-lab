@@ -43,7 +43,7 @@ Dependencies are already in the repo: `potrace`, `jimp` and `@resvg/resvg-js`. R
 | `edgeBadPct` | Raw antialiasing mismatch | Always 30–50%. Only compare it between runs of the same image |
 | `svgBytes` | Output size | Watch it when raising `--scale`, `--colors` or lowering `--turd` |
 
-Reference results from this repo: `public/paystar/logo.png` scores structural 0.46%, interior ΔE 0, 2 layers, 40 KB. `public/farnam/mascot.png` scores structural 1.7%, 10 layers, about 500 KB.
+Reference results: a flat two-colour wordmark logo (500×125) scored structural 0.46%, interior ΔE 0, 2 layers, 40 KB. A mascot illustration scores structural 1.7%, 10 layers, about 500 KB.
 
 ## Symptom → knob
 

@@ -8,7 +8,7 @@ import { OutroScene } from "./OutroScene";
 import { RoutingScene } from "./RoutingScene";
 
 // Scene lengths sum to 11.2s; three 0.4s transitions overlap → 10s total.
-export const PayStarPromo: React.FC = () => {
+export const PaymentsPromo: React.FC = () => {
   const { fps } = useVideoConfig();
   const transition = (
     <TransitionSeries.Transition

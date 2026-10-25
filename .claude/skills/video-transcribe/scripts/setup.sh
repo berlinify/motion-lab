@@ -15,13 +15,15 @@ ROOT="${WHISPER_CPP_DIR:-$HOME/.cache/whisper.cpp}"
 SRC="$ROOT/whisper.cpp-$VERSION"
 MODELS="$ROOT/models"
 mkdir -p "$ROOT" "$MODELS"
+# nproc is GNU coreutils (Linux); macOS has sysctl instead.
+JOBS="$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)"
 
 if [[ ! -x "$SRC/build/bin/whisper-cli" ]]; then
   echo "▸ building whisper.cpp v$VERSION in $SRC"
   rm -rf "$SRC"
   git clone --depth 1 --branch "v$VERSION" https://github.com/ggml-org/whisper.cpp.git "$SRC"
   cmake -S "$SRC" -B "$SRC/build" -DCMAKE_BUILD_TYPE=Release -DWHISPER_BUILD_TESTS=OFF >/dev/null
-  cmake --build "$SRC/build" -j"$(nproc)" --config Release --target whisper-cli >/dev/null
+  cmake --build "$SRC/build" -j"$JOBS" --config Release --target whisper-cli >/dev/null
 fi
 echo "✓ whisper-cli: $SRC/build/bin/whisper-cli"
 

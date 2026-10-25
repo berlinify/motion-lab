@@ -42,7 +42,7 @@ function usage(): never {
   --model NAME        ggml model in ${MODELS} (default: large-v3-turbo-q5_0;
                       large-v3-q5_0 = alternative if turbo struggles; 2.3× slower)
   --prompt "…"        initial prompt: spell names/brands/jargon the way you want them
-                      (e.g. "PayStar، فرنام، Remotion") — biggest single accuracy lever
+                      (e.g. "Acme Pay، فرنام، Remotion") — biggest single accuracy lever
   --out DIR           output folder (default: next to the input, <name>.transcript/)
   --formats LIST      any of json,srt,vtt,txt,md (default: all)
   --translate         translate speech to English (whisper can only translate *to* English)
@@ -235,7 +235,7 @@ const mmss = (ms: number) => `${String(Math.floor(ms / 60000)).padStart(2, "0")}
 
 function writeOutputs(dir: string, base: string, words: Caption[], cues: Cue[], rtl: boolean, o: Opts) {
   // RLM anchors the paragraph direction so a cue that starts with a Latin word
-  // ("PayStar …") still lays out right-to-left in players that guess direction.
+  // ("Acme Pay …") still lays out right-to-left in players that guess direction.
   const line = (t: string) => (rtl ? RLM + t : t);
   const kept = new Set(cues.flatMap((c) => c.words));
   const files: string[] = [];

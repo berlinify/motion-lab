@@ -2,17 +2,17 @@ import { Composition, Folder } from "remotion";
 import { GsapTitle } from "./GsapTitle";
 import { ThreeScene } from "./ThreeScene";
 import { ClaudeCodePromo } from "./promo/ClaudeCodePromo";
-import { PayStarPromo } from "./paystar/PayStarPromo";
-import { IconLoop } from "./paystar/IconLoop";
+import { PaymentsPromo } from "./payments/PaymentsPromo";
+import { IconLoop } from "./payments/IconLoop";
 import { CaptionedVideo, calculateCaptionedVideoMetadata } from "./captioned/CaptionedVideo";
 import { Highlights, calculateHighlightsMetadata } from "./highlights/Highlights";
 
 export const Root: React.FC = () => (
   <>
-    <Folder name="PayStar">
-      <Composition id="PayStarPromo" component={PayStarPromo} durationInFrames={300} fps={30} width={1920} height={1080} />
+    <Folder name="Payments">
+      <Composition id="PaymentsPromo" component={PaymentsPromo} durationInFrames={300} fps={30} width={1920} height={1080} />
       <Composition
-        id="PayStarIconGateway"
+        id="PaymentsIconGateway"
         component={IconLoop}
         durationInFrames={90}
         fps={30}
@@ -21,7 +21,7 @@ export const Root: React.FC = () => (
         defaultProps={{ icon: "gateway" as const, background: true }}
       />
       <Composition
-        id="PayStarIconRouting"
+        id="PaymentsIconRouting"
         component={IconLoop}
         durationInFrames={99}
         fps={30}
@@ -30,7 +30,7 @@ export const Root: React.FC = () => (
         defaultProps={{ icon: "routing" as const, background: true }}
       />
       <Composition
-        id="PayStarIconSettlement"
+        id="PaymentsIconSettlement"
         component={IconLoop}
         durationInFrames={90}
         fps={30}
