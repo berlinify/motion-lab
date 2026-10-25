@@ -18,7 +18,7 @@ mkdir -p "$ROOT" "$MODELS"
 # nproc is GNU coreutils (Linux); macOS has sysctl instead.
 JOBS="$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)"
 
-if [[ ! -x "$SRC/build/bin/whisper-cli" ]]; then``
+if [[ ! -x "$SRC/build/bin/whisper-cli" ]]; then
   echo "▸ building whisper.cpp v$VERSION in $SRC"
   rm -rf "$SRC"
   git clone --depth 1 --branch "v$VERSION" https://github.com/ggml-org/whisper.cpp.git "$SRC"
