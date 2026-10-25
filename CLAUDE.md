@@ -12,7 +12,7 @@ This is a programmatic video generation repo. It uses three separate rendering p
 | **Motion Canvas** (generator scenes → frames/MP4) | `src/motion-canvas/project.ts`, served by `vite.config.ts` | Explainer-style, code-driven 2D animation built with its own editor. |
 | **Satori + resvg** (JSX → SVG → PNG) | `scripts/thumbnail.tsx` | Static images: thumbnails, title cards, and overlays to bring into either pipeline. |
 
-FFmpeg: a full system ffmpeg (v9, with filters such as `scdet`, `silencedetect`, `ebur128`) is installed at `/usr/bin/ffmpeg`, and the analysis and transcription scripts use it. Remotion also bundles its own (`npx remotion ffmpeg …` / `npx remotion ffprobe …`), a minimal build without `-vf`/`-filter_complex` that can only transcode, concatenate, and mux. Motion Canvas uses `@motion-canvas/ffmpeg` with `@ffmpeg-installer` binaries. To inspect a frame of a composition, render it with `npm run still`.
+FFmpeg: the analysis and transcription scripts call a full system `ffmpeg`/`ffprobe` from `PATH`. It needs filters such as `scdet`, `silencedetect`, `ebur128` and `drawtext`. On Linux it's `/usr/bin/ffmpeg`. On macOS, use `brew install ffmpeg` (`/opt/homebrew/bin`), which also provides `fc-match` for the contact-sheet labels. Remotion also bundles its own (`npx remotion ffmpeg …` / `npx remotion ffprobe …`), a minimal build without `-vf`/`-filter_complex` that can only transcode, concatenate, and mux. Motion Canvas uses `@motion-canvas/ffmpeg` with `@ffmpeg-installer` binaries. To inspect a frame of a composition, render it with `npm run still`.
 
 ## Video projects
 

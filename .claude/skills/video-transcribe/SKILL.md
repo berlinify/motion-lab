@@ -21,7 +21,7 @@ bash .claude/skills/video-transcribe/scripts/setup.sh                    # whisp
 bash .claude/skills/video-transcribe/scripts/setup.sh large-v3-q5_0      # optional: second opinion when turbo struggles
 ```
 
-This builds whisper.cpp v1.9.5 and downloads the models into `~/.cache/whisper.cpp/`, which is shared across projects. Override the location with `WHISPER_CPP_DIR`. There is no usable GPU on this machine, so everything runs on CPU.
+This builds whisper.cpp v1.9.5 and downloads the models into `~/.cache/whisper.cpp/`, which is shared across projects. Override the location with `WHISPER_CPP_DIR`. It works on Linux and macOS. On Linux it runs on CPU. On macOS, whisper.cpp builds with Metal by default, so Apple Silicon Macs use the GPU and run noticeably faster than the CPU timings below. Building needs `git`, `cmake` and a C/C++ compiler (macOS: `xcode-select --install` and `brew install cmake`).
 
 ## Workflow
 
@@ -59,7 +59,7 @@ npm run render -- CaptionedVideo out/captioned.mp4 --props='{…same…}'
 
 Caption timestamps are relative to the start of the **source file**. Even with `--start`, the times stay aligned to the untrimmed file. When a clip is trimmed inside a larger edit, put the trim on the `<Sequence>` that wraps both the `<Video>` and the `<Captions>`. Don't shift the timestamps.
 
-## Models (CPU, 8 cores)
+## Models (measured on Linux, CPU, 8 cores)
 
 | Model | Size | Persian quality | Speed (measured) |
 |---|---|---|---|
