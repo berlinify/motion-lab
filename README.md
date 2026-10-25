@@ -46,7 +46,7 @@ npm run studio          # open Remotion Studio and browse every composition
 Render something:
 
 ```bash
-npm run render -- PayStarPromo out/paystar.mp4
+npm run render -- PaymentsPromo out/payments.mp4
 npm run still  -- ClaudeCodePromo out/frame.png --frame=90
 npm run thumbnail -- "Hello, video" out/thumb.png
 ```
@@ -72,10 +72,10 @@ All are registered in [`src/remotion/Root.tsx`](src/remotion/Root.tsx).
 
 | ID | Size · fps · length | What it is | Props |
 |---|---|---|---|
-| `PayStarPromo` | 1920×1080 · 30 · 10 s | PayStar brand promo: Intro → Routing → Features → Outro, with blur-zoom transitions over a continuous backdrop | none |
-| `PayStarIconGateway` | 512×512 · 30 · 3 s | Seamlessly looping animated line icon | `icon`, `background` |
-| `PayStarIconRouting` | 512×512 · 30 · 3.3 s | 〃 | `icon`, `background` |
-| `PayStarIconSettlement` | 512×512 · 30 · 3 s | 〃 | `icon`, `background` |
+| `PaymentsPromo` | 1920×1080 · 30 · 10 s | Fintech promo for the fictional "Acme Pay" brand: Intro → Routing → Features → Outro, with blur-zoom transitions over a continuous backdrop | none |
+| `PaymentsIconGateway` | 512×512 · 30 · 3 s | Seamlessly looping animated line icon | `icon`, `background` |
+| `PaymentsIconRouting` | 512×512 · 30 · 3.3 s | 〃 | `icon`, `background` |
+| `PaymentsIconSettlement` | 512×512 · 30 · 3 s | 〃 | `icon`, `background` |
 | `ClaudeCodePromo` | 1920×1080 · 30 · 10 s | Claude Code promo: Logo → Terminal → Features → Outro | none |
 | `CaptionedVideo` | from the video | Burns word-timed, RTL-aware captions into any video in `public/` | `videoSrc`, `captionsSrc` |
 | `Highlights` | from the EDL (default 1080×1920) | Social cut rendered from an `edl.json` | `edlSrc` |
@@ -87,7 +87,7 @@ All are registered in [`src/remotion/Root.tsx`](src/remotion/Root.tsx).
 **Transparent icon render** (WebM with alpha):
 
 ```bash
-npm run render -- PayStarIconRouting out/routing.webm \
+npm run render -- PaymentsIconRouting out/routing.webm \
   --codec=vp9 --image-format=png --pixel-format=yuva420p \
   --props='{"icon":"routing","background":false}'
 ```
@@ -106,7 +106,7 @@ npm run render -- PayStarIconRouting out/routing.webm \
 │   │   │   ├── blurZoom.tsx         #   blur-zoom TransitionSeries presentation
 │   │   │   └── Captions.tsx         #   word-highlighted captions, RTL/LTR per page
 │   │   ├── promo/                   # Claude Code promo (scenes, Backdrop, theme)
-│   │   ├── paystar/                 # PayStar promo, icons, IconLoop, traced logoPaths.ts
+│   │   ├── payments/                # Acme Pay promo, icons, IconLoop, placeholder Logo
 │   │   ├── captioned/               # CaptionedVideo composition
 │   │   └── highlights/              # Highlights composition (EDL renderer)
 │   └── motion-canvas/
@@ -142,7 +142,7 @@ The scene lengths minus the transition overlaps must add up to the composition's
 
 ### Brand logos as vectors
 
-`paystar/logoPaths.ts` was traced from `public/paystar/logo.png` with potrace. Each colour layer was traced separately, so the wordmark and the accent can animate independently. The `raster-to-svg` skill automates this; see below.
+`payments/Logo.tsx` is a placeholder logo for the fictional "Acme Pay" brand: a sparkle mark plus a Poppins wordmark, drawn as SVG so the two parts animate independently. To brand the promo for real, trace the real logo with the `raster-to-svg` skill (see below), one path per colour, and swap the paths in.
 
 ## Footage workflows (Claude Code skills)
 
@@ -166,7 +166,7 @@ The script writes `<name>.analysis/`, which contains:
 
 ```bash
 bash .claude/skills/video-transcribe/scripts/setup.sh          # once: builds whisper.cpp, downloads large-v3-turbo-q5_0
-npx tsx .claude/skills/video-transcribe/scripts/transcribe.ts <video|audio> --lang fa --prompt "PayStar، Remotion"
+npx tsx .claude/skills/video-transcribe/scripts/transcribe.ts <video|audio> --lang fa --prompt "Acme Pay، Remotion"
 ```
 
 The script runs whisper.cpp locally (CPU on Linux, Metal GPU on Apple Silicon): nothing is uploaded and no API key is needed. It outputs Remotion `Caption[]` JSON, SRT, VTT, TXT and a timestamped Markdown transcript. Persian is the default language, and the script handles ZWNJ (half-space) repair, Arabic → Persian letter normalization and hallucination filtering. To render the captions into a video, use the `CaptionedVideo` composition:

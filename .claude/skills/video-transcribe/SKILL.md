@@ -33,7 +33,7 @@ This builds whisper.cpp v1.9.5 and downloads the models into `~/.cache/whisper.c
 3. **Run:**
    ```bash
    npx tsx .claude/skills/video-transcribe/scripts/transcribe.ts <video|audio> \
-     --lang fa --prompt "PayStar، فرنام، Remotion" [--out DIR] [--model …]
+     --lang fa --prompt "Acme Pay، فرنام، Remotion" [--out DIR] [--model …]
    ```
    The script prints a JSON summary: language, `realtimeFactor` (processing time ÷ audio length), word and cue counts, `droppedAsHallucination` and `lowConfidenceWords`.
 4. **Proofread. This step is not optional for Persian.** Read the `.md` and fix the errors:
@@ -48,7 +48,7 @@ This builds whisper.cpp v1.9.5 and downloads the models into `~/.cache/whisper.c
 
 ## Burned-in captions (Remotion)
 
-- `src/remotion/shared/Captions.tsx` is the reusable component. It shows word-synced pages, highlights the word being spoken, and picks the direction (RTL/LTR) per page by majority script, so a Persian line opening with "PayStar" still reads right-to-left. Fonts are Vazirmatn for Persian with Inter for Latin.
+- `src/remotion/shared/Captions.tsx` is the reusable component. It shows word-synced pages, highlights the word being spoken, and picks the direction (RTL/LTR) per page by majority script, so a Persian line opening with "Acme Pay" still reads right-to-left. Fonts are Vazirmatn for Persian with Inter for Latin.
 - The `CaptionedVideo` composition takes `videoSrc` and `captionsSrc` (both paths inside `public/`). `calculateMetadata` reads the video's duration and size and loads the captions.
 
 ```bash

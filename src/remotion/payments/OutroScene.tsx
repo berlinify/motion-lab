@@ -1,5 +1,5 @@
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { LOGO_ASPECT, PayStarLogo } from "./PayStarLogo";
+import { LOGO_ASPECT, Logo } from "./Logo";
 import { Sparkle } from "./Sparkle";
 import { clamp, colors, easeOutExpo, fonts } from "./theme";
 
@@ -38,7 +38,7 @@ export const OutroScene: React.FC = () => {
         );
       })}
       <div style={{ scale: String(interpolate(logoIn, [0, 1], [0.86, 1])), opacity: logoIn, filter: `blur(${(1 - logoIn) * 16}px)`, height: 1000 * LOGO_ASPECT }}>
-        <PayStarLogo width={1000} accent={spring({ frame: frame - 0.2 * fps, fps, config: { damping: 9 } })} shine={interpolate(frame, [0.6 * fps, 1.5 * fps], [0, 1])} glow={0.5} />
+        <Logo width={1000} accent={spring({ frame: frame - 0.2 * fps, fps, config: { damping: 9 } })} shine={interpolate(frame, [0.6 * fps, 1.5 * fps], [0, 1])} glow={0.5} />
       </div>
       {/* Persian tagline: word-level animation keeps letters joined */}
       <div dir="rtl" lang="fa" style={{ display: "flex", gap: 18, fontFamily: fonts.persian, fontWeight: 700, fontSize: 60, color: colors.white, marginTop: 10 }}>
@@ -72,7 +72,7 @@ export const OutroScene: React.FC = () => {
           boxShadow: `0 0 ${50 + Math.sin(frame / 6) * 14}px rgba(255,204,0,0.55)`,
         }}
       >
-        paystar.ir
+        acmepay.example
         <div
           style={{
             position: "absolute",

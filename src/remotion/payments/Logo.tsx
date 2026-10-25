@@ -1,14 +1,19 @@
 import { useId } from "react";
-import { colors } from "./theme";
-import { ACCENT_PATH, WORDMARK_PATH } from "./logoPaths";
+import { sparklePath } from "./Sparkle";
+import { colors, fonts } from "./theme";
 
-// Vector logo (traced paths) so it stays crisp at any size and its two
-// parts can animate independently.
+// Placeholder "Acme Pay" logo: a sparkle mark plus a Poppins wordmark, drawn in SVG so
+// it stays crisp at any size and its two parts can animate independently.
+// To use a real brand logo, trace it with the raster-to-svg skill (--ts) and swap the
+// wordmark <text> and ACCENT_PATH for the traced paths.
+export const BRAND_NAME = "Acme Pay";
 const PAD = 60;
 const VB_W = 4000 + PAD * 2;
 const VB_H = 1000 + PAD * 2;
+const ACCENT = { x: 420, y: 500, r: 400 };
+const ACCENT_PATH = sparklePath(ACCENT.x, ACCENT.y, ACCENT.r);
 /** Centre of the yellow accent in viewBox units (for transform origin / impact point). */
-export const ACCENT_CENTER = { x: 552 + PAD, y: 288 + PAD };
+export const ACCENT_CENTER = { x: ACCENT.x + PAD, y: ACCENT.y + PAD };
 export const LOGO_ASPECT = VB_H / VB_W;
 
 type Props = {
@@ -23,7 +28,13 @@ type Props = {
   readonly glow?: number;
 };
 
-export const PayStarLogo: React.FC<Props> = ({ width, wordmarkColor = colors.white, reveal = 1, accent = 1, shine = -1, glow = 0 }) => {
+const Wordmark: React.FC<{ readonly fill?: string }> = ({ fill }) => (
+  <text x={960} y={500} dominantBaseline="central" fontFamily={fonts.display} fontWeight={700} fontSize={600} letterSpacing={-12} fill={fill}>
+    {BRAND_NAME}
+  </text>
+);
+
+export const Logo: React.FC<Props> = ({ width, wordmarkColor = colors.white, reveal = 1, accent = 1, shine = -1, glow = 0 }) => {
   const id = useId().replace(/:/g, "");
   const wipeX = -PAD - 500 + reveal * (VB_W + 1000);
   const shineX = -PAD - 900 + shine * (VB_W + 1800);
@@ -39,7 +50,7 @@ export const PayStarLogo: React.FC<Props> = ({ width, wordmarkColor = colors.whi
           <rect x={-PAD} y={-PAD} width={VB_W} height={VB_H} fill={`url(#${id}-wipe)`} />
         </mask>
         <clipPath id={`${id}-shape`}>
-          <path d={WORDMARK_PATH} />
+          <Wordmark />
         </clipPath>
         <linearGradient id={`${id}-shine`} x1="0" x2="1" y1="0" y2="0">
           <stop offset="0" stopColor={colors.yellow} stopOpacity="0" />
@@ -48,7 +59,7 @@ export const PayStarLogo: React.FC<Props> = ({ width, wordmarkColor = colors.whi
         </linearGradient>
       </defs>
       <g mask={`url(#${id}-mask)`} style={{ filter: glow > 0 ? `drop-shadow(0 0 ${30 * glow}px rgba(61,75,255,0.9))` : undefined }}>
-        <path d={WORDMARK_PATH} fill={wordmarkColor} />
+        <Wordmark fill={wordmarkColor} />
         {shine >= 0 && shine <= 1 ? (
           <g clipPath={`url(#${id}-shape)`}>
             <rect x={shineX} y={-PAD - 200} width={900} height={VB_H + 400} fill={`url(#${id}-shine)`} transform={`skewX(-22)`} />

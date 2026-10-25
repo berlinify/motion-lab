@@ -1,7 +1,7 @@
 import { loadFont } from "@remotion/fonts";
 import { Easing, staticFile } from "remotion";
 
-// Brand colours sampled from public/paystar/logo.png.
+// Brand palette for the Acme Pay placeholder: navy and yellow.
 export const colors = {
   navy: "#000066",
   deep: "#03031F",
